@@ -1,4 +1,4 @@
-21669168164573545
+21728494060943102
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -90194,3 +90194,248 @@ varistor
 0
 2
 2
+bldc
+FEATHERWING_NODIM
+
+
+0
+30
+30
+edg
+CLIFF_FCR7350
+Safety banana jack. Since the datasheet doesn't specify pad dimensions, this uses a +1mm diameter pad, similar to the CalTest CT3151 in the stock library.
+
+0
+5
+5
+edg
+ESP32-WROVER-DEV_Chicken
+ESP32-WROVER-DEV with holes on the side in case things don't work
+ESP32 WROVER Camera
+0
+120
+40
+edg
+Freenove_ESP32-WROVER
+ESP32-WROVER (and compatible form factor) socketed dev board
+
+0
+40
+40
+edg
+Freenove_ESP32S3-WROOM_Expansion
+ESP32S3-WROOM with second row of expansion headers
+
+0
+80
+40
+edg
+HalfMouseBites
+Adapted for JLC's process (5mm width, 2mm spacing), put these ~55mm apart, other dimensions from https://cdn.sparkfun.com/assets/home_page_posts/4/4/0/0/Mousebites_Whitepaper_Final.pdf
+
+0
+0
+0
+edg
+HalfMouseBites_Recessed
+Adapted for JLC's process (5mm width, 2mm spacing), put these ~55mm apart, other dimensions from https://cdn.sparkfun.com/assets/home_page_posts/4/4/0/0/Mousebites_Whitepaper_Final.pdf
+
+0
+0
+0
+edg
+Hirose_FH35C-31S-0.3SHW_1x31-1MP_P0.30mm_Horizontal
+FFC/FPC 31 Circuits. Outline and assembly drawing is (probably) wrong, but pad pattern should not be.
+connector top/bottom entry
+0
+33
+32
+edg
+Holyiot-18010-NRF52840
+nRF52840 module with castellated pads and optionaly under-module additional GPIOs
+
+0
+37
+37
+edg
+Indicator_IdDots_4
+
+
+0
+0
+0
+edg
+Indicator_LeadFree
+
+
+0
+0
+0
+edg
+JlcToolingHole_1.152mm
+Tooling holes for JLC assembly, 1.152 mm hole + 1.3mm soldermask opening
+
+0
+0
+0
+edg
+LED_SK6812-SIDE-A
+Side mount Neopixel LED. http://www.normandled.com/upload/201810/SK6812%20SIDE-A%20LED%20Datasheet.pdf
+
+0
+6
+4
+edg
+LED_SK6812MINI-E
+Reverse mount Neopixel LED. Footprint is designed for through-board, emitting out of the placement side, with the copper on the opposite side. https://cdn-shop.adafruit.com/product-files/4960/4960_SK6812MINI-E_REV02_EN.pdf
+
+0
+4
+4
+edg
+Lcd_Er_Epd027_2_Outline
+Outline for the ER-EPD027-2 series e-paper displays. Connector dimensions (on User.Comments layer, with FPC contact facing away from board) is from the Outline Drawing.
+
+0
+0
+0
+edg
+Lcd_Er_Oled0.91_3_Outline
+Outline for the ER-OLED0.91-3 series OLEDs. Connector placement (on User.Comments layer, with FPC folded over underneath the board, for a bottom-entry FPC connector) is from the Reference Mechanical Design.
+
+0
+0
+0
+edg
+Lcd_Er_Oled0.96_1.1_Outline
+Outline for the ER-OLED0.91-1.1 series OLEDs, bottom-contact FPC type. Connector dimensions (on User.Comments layer, with FPC folded over underneath the board, contact facing away from module) is from the Outline Drawing.
+
+0
+0
+0
+edg
+Lcd_Er_Oled0.96_1c_Outline
+Outline for the ER-OLED0.96-1C RGB OLED. Connector placement (on User.Comments layer, with FPC folded over underneath the board, for a bottom-entry FPC connector) is from the Reference Mechanical Design.
+
+0
+0
+0
+edg
+Lcd_Er_Oled022_1_Outline
+Outline for the ER-OLED022-1 series OLEDs. Connector dimensions (on User.Comments layer, with FPC folded over underneath the board, contact facing away from module) is from the Outline Drawing.
+
+0
+0
+0
+edg
+Lcd_Er_Oled028_1_Outline
+Outline for the ER-OLED028-1 series OLEDs. Connector dimensions (on User.Comments layer, with FPC folded over underneath the board, contact facing away from module) is from the Outline Drawing.
+
+0
+0
+0
+edg
+Lcd_Qt096t_if09_Outline
+
+
+0
+0
+0
+edg
+MouseBites
+Adapted for JLC's process (5mm width, 2mm spacing), put these ~55mm apart, other dimensions from https://cdn.sparkfun.com/assets/home_page_posts/4/4/0/0/Mousebites_Whitepaper_Final.pdf
+
+0
+0
+0
+edg
+MouseBites_Recessed
+Adapted for JLC's process (5mm width, 2mm spacing), put these ~55mm apart, other dimensions from https://cdn.sparkfun.com/assets/home_page_posts/4/4/0/0/Mousebites_Whitepaper_Final.pdf
+
+0
+0
+0
+edg
+Nucleo32
+
+
+0
+30
+30
+edg
+PinHeader_2x03_P2.54mm_EdgeInline
+
+
+0
+6
+6
+edg
+PinHeader_2x05_P1.27mm_Horizontal_Shrouded
+Through hole angled pin header, 2x05, 1.27mm pitch, 4.0mm pin length, double rows
+Through hole angled pin header THT 2x05 1.27mm double row
+0
+10
+10
+edg
+RotaryEncoder_Alps_EC05E
+Alps rotary encoder, EC05E... hollow shaft, https://tech.alpsalpine.com/e/products/detail/EC05E1220401/
+
+0
+5
+4
+edg
+RotaryEncoder_Alps_EC11J15-Switch
+Alps rotary encoder, EC11J15... with switch, vertical shaft, https://cdn-shop.adafruit.com/product-files/5454/5454_1837001.pdf
+rotary encoder
+0
+11
+6
+edg
+Symbol_Duckling
+Duckling
+
+0
+0
+0
+edg
+Symbol_DucklingSolid
+Converted using: svg2mod DucklingSolid.svg --force F.Cu -o 'C:\Users\Ducky\Documents\GitHub\edg-ide\PolymorphicBlocks\examples\edg.pretty\DucklingSolid.kicad_mod' -P -p 2 -c --factor 0.1
+svg2mod
+0
+1
+0
+edg
+Symbol_LemurSmall
+Converted using: svg2mod -i small.svg -o lemur_small.kicad_mod -c -f 0.2
+svg2mod
+0
+0
+0
+edg
+TestPoint_TE_RCS_RCW_1206
+Adapted from Resistor SMD 1206 (3216 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator
+resistor
+0
+1
+1
+edg
+TestPoint_TE_RCT_0805
+Adapted from Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator
+resistor
+0
+1
+1
+edg
+TestPoint_TE_RCU_0603
+Adapted from Resistor SMD 0603 (1608 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator
+resistor
+0
+1
+1
+edg
+USB_A_Pads
+Pads for a USB-A plug, with the contacts on the board copper. Approx 2.25mm clearance from the contact surface to the bottom of the receptacle. https://www.usb.org/sites/default/files/CCWG_A_Plug_Form_Factor_Guideline_Revision_1.0_.pdf
+
+0
+4
+4

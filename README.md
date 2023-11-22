@@ -1,3 +1,3 @@
 # MiniKers_2
 
-A human powered automatic door project
+Self powered automatics with brushless motor and energy regeneration (as well as some smart IoT capability)

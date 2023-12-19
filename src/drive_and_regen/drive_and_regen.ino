@@ -5,24 +5,24 @@
 #define CCW  -1
 
 // Port Assignment
-int PORT_in1 = 26;
-int PORT_in2 = 24;
-int PORT_in3 = 0;
-int PORT_en1 = 25;
-int PORT_en2 = 1;
-int PORT_en3 = 22;
-int PORT_nfault = 5;
-int PORT_nreset = 23;
+int PORT_in1 = 12;
+int PORT_in2 = 25;
+int PORT_in3 = 1;
+int PORT_en1 = 26;
+int PORT_en2 = 24;
+int PORT_en3 = 0;
+int PORT_nfault = 2;
+int PORT_nreset = 5;
 
-int PORT_hall_u = 11;
-int PORT_hall_v = 12;
-int PORT_hall_w = 13;
+int PORT_hall_u = 9;
+int PORT_hall_v = 10;
+int PORT_hall_w = 11;
 
 int PORT_vsense = A1;
 int PORT_isense = A0;
-int PORT_cur1 = A5;
-int PORT_cur2 = 18;
-int PORT_cur3 = 17;
+int PORT_cur1 = A3;
+int PORT_cur2 = A2;
+int PORT_cur3 = A5;
 
 int PORT_sw1 = 6;
 
@@ -36,7 +36,10 @@ int val_w = 0;
 int vin_raw = 0;
 float mv_per_lsb = 3600.0F/1024.0F/0.128F; // 10-bit ADC with 3.6V input range + 0.128 V/unit
 int iin_raw = 0;
-float ma_per_lsb = 3600.0F/1024.0F;
+float ma_adj_const = 3600.0F/1024.0F / 10.0F/0.051F;
+float k = 0.05;
+float ma_raw = 0;
+float ma_filtered = 0;
 int val_cur1 = 0;
 int val_cur2 = 0;
 int val_cur3 = 0;
@@ -63,11 +66,23 @@ float avgPulseTime;
 float PPM;
 float RPM;
 
+int holdingTime;
+
 #define IDLE        0
 #define RUNNING     1
 #define HOLD        2
 #define HARVESTING  3
 int door_state = IDLE;
+
+
+// New
+int PORT_hvgate = 21;
+int PORT_lvgate = 13;
+int PORT_usersw = 7;
+int PORT_trigger = A4;
+
+bool hvgate_on = 0;
+
 
 // Setup
 void setup() {
@@ -112,6 +127,19 @@ void setup() {
 
   pinMode(PORT_sw1, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(PORT_sw1), buttonPress, FALLING);
+
+
+  // New
+  pinMode(PORT_hvgate, OUTPUT);
+  digitalWrite(PORT_hvgate, LOW);
+
+  pinMode(PORT_usersw, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(PORT_usersw), HVbuttonPress, FALLING);
+
+  pinMode(PORT_lvgate, OUTPUT);
+  digitalWrite(PORT_lvgate, HIGH);
+
+
 }
 
 void loop() {
@@ -123,20 +151,35 @@ void loop() {
     }
   } 
 
-  if ( door_state == RUNNING && pulseCount < -6000 ) {
+  if ( door_state == RUNNING && pulseCount > 30000 ) {
     bldc_direction = 0;
     door_state = HOLD;
     bldc_brake();
+  }
 
-    delay(5000);
-
-    bldc_idle();
-    door_state = IDLE;
+  if ( door_state == HOLD ) {
+    holdingTime++;
+    if ( holdingTime >= 5000 ) {
+      bldc_idle();
+      door_state = IDLE;
+    }
   }
 
   if ( door_state == IDLE && RPM > 100 ) {
     bldc_regen();
     door_state = HARVESTING;
+  }
+
+  // Protection
+  iin_raw = analogRead(PORT_isense);
+  ma_raw = (float) (iin_raw - 400) * ma_adj_const;
+  ma_filtered = ma_raw * k + (1.0 - k) * ma_filtered;
+  Serial.println(String(" {") + ma_filtered + String(" mA}"));
+
+  if ( hvgate_on && door_state && (ma_filtered > 1500 || ma_filtered < -1500) ) {
+    turnOffHV();
+    bldc_idle();
+    door_state = IDLE;
   }
 
   // Serial.println(String("Hall Step: ") + bldc_step);
@@ -145,6 +188,9 @@ void loop() {
   // Serial.println(String("Detected Direction: ") + direct);
   // Serial.println(String("Control Direction: ") + bldc_direction);
   Serial.println(String("Status: ") + door_state);
+
+  // New
+  Serial.println(String("HV Gate: ") + hvgate_on);
 
   /*
   // Hall Position Detection
@@ -167,7 +213,7 @@ void loop() {
   iin_raw = analogRead(PORT_isense);
   // Voltage and Current Report
   Serial.println(String(" [") + (float) vin_raw * mv_per_lsb + String(" mV]"));
-  Serial.println(String(" {") + (float) iin_raw * ma_per_lsb + String(" mA}"));
+  Serial.println(String(" {") + (float) iin_raw + String(" mA}"));
   
   // Per-Phase Current Sensing
   val_cur1 = analogRead(PORT_cur1);
@@ -181,6 +227,13 @@ void loop() {
   // Delay for Detection and Sensing
   // delay(100);
 
+
+  // New
+  /*
+  int trigger_out = analogRead(PORT_trigger);
+  Serial.println(String("Trigger: ") + trigger_out);
+  */
+
 }
 
 /**
@@ -191,6 +244,10 @@ void buttonPress() {
     bldc_direction = CW;
     door_state = RUNNING;
     bldc_move();
+  }
+  else {
+    bldc_idle();
+    door_state = IDLE;
   }
 }
 
@@ -351,4 +408,23 @@ void bldc_regen() {
   HwPWM0.writePin(PORT_en2, duty_cycle, false);
   digitalWrite(PORT_in3, LOW);
   HwPWM0.writePin(PORT_en3, duty_cycle, false);
+}
+
+
+// New
+void HVbuttonPress() {
+  if (hvgate_on)
+    turnOffHV();
+  else
+    turnOnHV();
+}
+
+void turnOnHV() {
+  hvgate_on = true;
+  digitalWrite(PORT_hvgate, hvgate_on);
+}
+
+void turnOffHV() {
+  hvgate_on = false;
+  digitalWrite(PORT_hvgate, hvgate_on);
 }

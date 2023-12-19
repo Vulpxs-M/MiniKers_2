@@ -5,24 +5,24 @@
 #define CCW  -1
 
 // Port Assignment
-int PORT_in1 = 26;
-int PORT_in2 = 24;
-int PORT_in3 = 0;
-int PORT_en1 = 25;
-int PORT_en2 = 1;
-int PORT_en3 = 22;
-int PORT_nfault = 5;
-int PORT_nreset = 23;
+int PORT_in1 = 12;
+int PORT_in2 = 25;
+int PORT_in3 = 1;
+int PORT_en1 = 26;
+int PORT_en2 = 24;
+int PORT_en3 = 0;
+int PORT_nfault = 2;
+int PORT_nreset = 5;
 
-int PORT_hall_u = 11;
-int PORT_hall_v = 12;
-int PORT_hall_w = 13;
+int PORT_hall_u = 9;
+int PORT_hall_v = 10;
+int PORT_hall_w = 11;
 
 int PORT_vsense = A1;
 int PORT_isense = A0;
-int PORT_cur1 = A5;
-int PORT_cur2 = 18;
-int PORT_cur3 = 17;
+int PORT_cur1 = A3;
+int PORT_cur2 = A2;
+int PORT_cur3 = A5;
 
 int PORT_sw1 = 6;
 
@@ -34,9 +34,8 @@ int val_v = 0;
 int val_w = 0;
 
 int vin_raw = 0;
-float mv_per_lsb = 3600.0F/1024.0F/0.129F; // 10-bit ADC with 3.6V input range + 0.129 V/unit
+float mv_per_lsb = 3600.0F/1024.0F/0.128F; // 10-bit ADC with 3.6V input range + 0.128 V/unit
 int iin_raw = 0;
-float ma_per_lsb = 3600.0F/1024.0F/0.1765F;
 int val_cur1 = 0;
 int val_cur2 = 0;
 int val_cur3 = 0;
@@ -61,6 +60,14 @@ float avgPulseTime;
 float PPM;
 float RPM;
 
+// New
+int PORT_hvgate = 21;
+int PORT_lvgate = 13;
+int PORT_usersw = 7;
+int PORT_trigger = A4;
+
+bool hvgate_on = 0;
+
 // Setup
 void setup() {
   // Digital Pins
@@ -75,9 +82,9 @@ void setup() {
   digitalWrite(PORT_en3, LOW);
   digitalWrite(PORT_nreset, HIGH);
 
-  pinMode(PORT_hall_u, INPUT);
-  pinMode(PORT_hall_v, INPUT);
-  pinMode(PORT_hall_w, INPUT);
+  pinMode(PORT_hall_u, INPUT_PULLUP);
+  pinMode(PORT_hall_v, INPUT_PULLUP);
+  pinMode(PORT_hall_w, INPUT_PULLUP);
 
   // For nrf52840 with native usb
   Serial.begin(115200);
@@ -104,6 +111,16 @@ void setup() {
 
   pinMode(PORT_sw1, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(PORT_sw1), buttonPress, FALLING);
+
+  // New
+  pinMode(PORT_hvgate, OUTPUT);
+  digitalWrite(PORT_hvgate, LOW);
+
+  pinMode(PORT_usersw, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(PORT_usersw), turnOnHV, FALLING);
+
+  pinMode(PORT_lvgate, OUTPUT);
+  digitalWrite(PORT_lvgate, HIGH);
 }
 
 void loop() {
@@ -147,6 +164,10 @@ void loop() {
   // Delay for Detection and Sensing
   delay(100);
   */
+
+  // New
+  int trigger_out = analogRead(PORT_trigger);
+  Serial.println(String("Trigger: ") + trigger_out);
 }
 
 void hall_read() {
@@ -259,8 +280,10 @@ void bldc_move() {
 
 // Converts from Hall Step to Commutation Step
 int convert(int hall_step, int direction) {
-  int cw[] = {2, 4, 3, 6, 1, 5};
-  int ccw[] = {1, 3, 2, 5, 6, 4};
+  // int cw[] = {2, 4, 3, 6, 1, 5}; // works with directional sensing
+  int cw[] = {3, 5, 4, 1, 2, 6}; // most efficient
+  // int ccw[] = {1, 3, 2, 5, 6, 4}; // works with directional sensing
+  int ccw[] = {6, 2, 1, 4, 5, 3}; // most efficient
 
   if (hall_step < 1 || hall_step > 6)
     return 0;
@@ -281,4 +304,10 @@ void buttonPress() {
   else if ( bldc_direction == CCW ) {
     bldc_direction = CW;
   }
+}
+
+// New
+void turnOnHV() {
+  hvgate_on = !hvgate_on;
+  digitalWrite(PORT_hvgate, hvgate_on);
 }

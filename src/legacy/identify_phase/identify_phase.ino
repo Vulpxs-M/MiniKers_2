@@ -1,29 +1,29 @@
 #include <Arduino.h>
 #include <Adafruit_TinyUSB.h> // for Serial
 
-// ports
-int PORT_in1 = 26;
-int PORT_in2 = 24;
-int PORT_in3 = 0;
-int PORT_en1 = 25;
-int PORT_en2 = 1;
-int PORT_en3 = 22;
-int PORT_nfault = 5;
-int PORT_nreset = 23;
+// Port Assignment
+int PORT_in1 = 12;
+int PORT_in2 = 25;
+int PORT_in3 = 1;
+int PORT_en1 = 26;
+int PORT_en2 = 24;
+int PORT_en3 = 0;
+int PORT_nfault = 2;
+int PORT_nreset = 5;
 
-int PORT_hall_u = 11;
-int PORT_hall_v = 12;
-int PORT_hall_w = 13;
+int PORT_hall_u = 9;
+int PORT_hall_v = 10;
+int PORT_hall_w = 11;
 
 int PORT_vsense = A1;
 int PORT_isense = A0;
-int PORT_cur1 = A5;
-int PORT_cur2 = 18;
-int PORT_cur3 = 17;
+int PORT_cur1 = A3;
+int PORT_cur2 = A2;
+int PORT_cur3 = A5;
 
 int PORT_sw1 = 6;
 
-// values
+// Values for Serial Print
 int val_nfault = 0;
 
 int val_u = 0;
@@ -31,14 +31,31 @@ int val_v = 0;
 int val_w = 0;
 
 int vin_raw = 0;
-float mv_per_lsb = 3600.0F/1024.0F/0.129F; // 10-bit ADC with 3.6V input range + 0.129 V/unit
+float mv_per_lsb = 3600.0F/1024.0F/0.128F; // 10-bit ADC with 3.6V input range + 0.128 V/unit
 int iin_raw = 0;
-float ma_per_lsb = 3600.0F/1024.0F/0.1765F;
+float ma_adj_const = 3600.0F/1024.0F / 10.0F/0.051F;
+float k = 0.05;
+float ma_raw = 0;
+float ma_filtered = 0;
 int val_cur1 = 0;
 int val_cur2 = 0;
 int val_cur3 = 0;
 
-int duty_cycle = bit(6) - 1; // 127 in 0-255 -> 50%
+// Configuration and Global Parameters
+int duty_cycle = bit(7) - 1;
+// bit(7) - 1 = 127 in 0-255 -> 50%; bit(6) - 1 = 63 -> 25%
+int duty_max = bit(8) - 1;
+
+int bldc_direction = 0;
+int bldc_step = 0;
+
+// New
+int PORT_hvgate = 21;
+int PORT_lvgate = 13;
+int PORT_usersw = 7;
+int PORT_trigger = A4;
+
+bool hvgate_on = 0;
 
 int state = 0;
 
@@ -71,6 +88,16 @@ void setup() {
 
   pinMode(PORT_sw1, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(PORT_sw1), buttonPress, FALLING);
+
+  // New
+  pinMode(PORT_hvgate, OUTPUT);
+  digitalWrite(PORT_hvgate, LOW);
+
+  pinMode(PORT_usersw, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(PORT_usersw), HVbuttonPress, FALLING);
+
+  pinMode(PORT_lvgate, OUTPUT);
+  digitalWrite(PORT_lvgate, HIGH);
 }
 
 void loop() {
@@ -176,4 +203,22 @@ void buttonPress() {
       HwPWM0.writePin(PORT_in3, 0, false);
       digitalWrite(PORT_en3, LOW);
   }
+}
+
+// New
+void HVbuttonPress() {
+  if (hvgate_on)
+    turnOffHV();
+  else
+    turnOnHV();
+}
+
+void turnOnHV() {
+  hvgate_on = true;
+  digitalWrite(PORT_hvgate, hvgate_on);
+}
+
+void turnOffHV() {
+  hvgate_on = false;
+  digitalWrite(PORT_hvgate, hvgate_on);
 }

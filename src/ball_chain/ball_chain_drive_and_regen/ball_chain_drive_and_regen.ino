@@ -45,7 +45,7 @@ int val_cur2 = 0;
 int val_cur3 = 0;
 
 // Configuration and Global Parameters
-int duty_cycle = 40;
+int duty_cycle = 140;
 int duty_cycle_regen = 128;
 // bit(7) - 1 = 127 in 0-255 -> 50%; bit(6) - 1 = 63 -> 25%
 int duty_max = bit(8) - 1;
@@ -173,9 +173,14 @@ void loop() {
 
   // Protection
   iin_raw = analogRead(PORT_isense);
-  ma_raw = (float) (iin_raw - 400) * ma_adj_const;
+  // ma_raw = (float) (iin_raw - 400) * ma_adj_const;
+  // ma_filtered = ma_raw * k + (1.0 - k) * ma_filtered;
+  // Serial.println(String(" {") + ma_filtered + String(" mA}"));
+  vin_raw = analogRead(PORT_vsense);
+  ma_raw = (411.6 - ((float) vin_raw * mv_per_lsb / 1000 - 10) * 1.72 - iin_raw) / 145.3;
   ma_filtered = ma_raw * k + (1.0 - k) * ma_filtered;
-  Serial.println(String(" {") + ma_filtered + String(" mA}"));
+  Serial.println(String(" {") + ma_filtered + String(" A}"));
+  // Serial.println(iin_raw);
 
   if ( hvgate_on && door_state && (ma_filtered > 2000 || ma_filtered < -2000) ) {
     turnOffHV();
@@ -184,14 +189,14 @@ void loop() {
   }
 
   // Serial.println(String("Hall Step: ") + bldc_step);
-  Serial.println(String("RPM: ") + RPM);
-  Serial.println(String("Pulse Count: ") + pulseCount);
+  // Serial.println(String("RPM: ") + RPM);
+  // Serial.println(String("Pulse Count: ") + pulseCount);
   // Serial.println(String("Detected Direction: ") + direct);
   // Serial.println(String("Control Direction: ") + bldc_direction);
-  Serial.println(String("Status: ") + door_state);
+  // Serial.println(String("Status: ") + door_state);
 
   // New
-  Serial.println(String("HV Gate: ") + hvgate_on);
+  // Serial.println(String("HV Gate: ") + hvgate_on);
 
   /*
   // Hall Position Detection

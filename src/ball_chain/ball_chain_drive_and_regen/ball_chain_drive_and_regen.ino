@@ -33,13 +33,17 @@ int val_u = 0;
 int val_v = 0;
 int val_w = 0;
 
+float k = 0.05; // filter constant
+int prevSerial = 0;
+
 int vin_raw = 0;
-float mv_per_lsb = 3600.0F/1024.0F/0.128F; // 10-bit ADC with 3.6V input range + 0.128 V/unit
+float vin_calculated = 0;
+float vin_filtered = 0;
+
 int iin_raw = 0;
-float ma_adj_const = 3600.0F/1024.0F / 10.0F/0.051F;
-float k = 0.05;
-float ma_raw = 0;
-float ma_filtered = 0;
+float iin_calculated = 0;
+float iin_filtered = 0;
+
 int val_cur1 = 0;
 int val_cur2 = 0;
 int val_cur3 = 0;
@@ -56,6 +60,7 @@ int bldc_step = 0;
 // For RPM and Pulse Count
 int direct = CW;
 int pulseCount;
+int openingAnglePulse = 2000;
 
 float startTime;
 float prevTime;
@@ -144,7 +149,7 @@ void setup() {
 }
 
 void loop() {
-  if ((millis() - prevTime) > 600) {
+  if ((millis() - prevTime) > 200) {
     RPM = 0;
     if ( door_state == HARVESTING ) {
       bldc_idle();
@@ -152,15 +157,15 @@ void loop() {
     }
   } 
 
-  if ( door_state == RUNNING && pulseCount > 30000 ) {
+  if ( door_state == RUNNING && pulseCount > openingAnglePulse ) {
     bldc_direction = 0;
     door_state = HOLD;
+    holdingTime = millis();
     bldc_brake();
   }
 
   if ( door_state == HOLD ) {
-    holdingTime++;
-    if ( holdingTime >= 5000 ) {
+    if ( millis() - holdingTime >= 5000 ) {
       bldc_idle();
       door_state = IDLE;
     }
@@ -171,22 +176,38 @@ void loop() {
     door_state = HARVESTING;
   }
 
-  // Protection
-  iin_raw = analogRead(PORT_isense);
-  // ma_raw = (float) (iin_raw - 400) * ma_adj_const;
-  // ma_filtered = ma_raw * k + (1.0 - k) * ma_filtered;
-  // Serial.println(String(" {") + ma_filtered + String(" mA}"));
   vin_raw = analogRead(PORT_vsense);
-  ma_raw = (411.6 - ((float) vin_raw * mv_per_lsb / 1000 - 10) * 1.72 - iin_raw) / 145.3;
-  ma_filtered = ma_raw * k + (1.0 - k) * ma_filtered;
-  Serial.println(String(" {") + ma_filtered + String(" A}"));
-  // Serial.println(iin_raw);
+  // vin_calculated = vin_raw * 0.0272 + 0.0735;
+  // vin_filtered = vin_calculated * k + (1.0 - k) * vin_filtered;
 
-  if ( hvgate_on && door_state && (ma_filtered > 2000 || ma_filtered < -2000) ) {
-    turnOffHV();
-    bldc_idle();
-    door_state = IDLE;
+  iin_raw = analogRead(PORT_isense);
+  // iin_calculated = (411.6 - (vin_calculated - 10) * 1.72 - iin_raw) / 145.3;
+  // iin_filtered = iin_calculated * k + (1.0 - k) * iin_filtered;
+
+  val_cur1 = analogRead(PORT_cur1);
+  val_cur2 = analogRead(PORT_cur2);
+  val_cur3 = analogRead(PORT_cur3);
+
+  if ( millis() > (prevSerial + 4) && hvgate_on && vin_filtered > 5 ) {
+    // Serial.println(vin_raw);
+    // Serial.println(iin_raw);
+    // Serial.println(String(" [") + vin_filtered + String(" V]"));
+    // Serial.println(String(" {") + iin_filtered + String(" A}"));
+    // Serial.println(millis());
+
+    // Serial.println(millis() + String(",") + vin_calculated + String(",") + iin_calculated + String(",") + door_state);
+    Serial.println(millis() + String(",") + vin_raw + String(",") + iin_raw + String(",") + door_state + String(",") + RPM + String(",") + 
+                    val_cur1 + String(",") + val_cur2 + String(",") + val_cur3)
+
+    prevSerial = millis();
   }
+
+  // Protection
+  // if ( hvgate_on && door_state (iin_filtered > 2 || iin_filtered < -2) ) {
+  //   turnOffHV();
+  //   bldc_idle();
+  //   door_state = IDLE;
+  // }
 
   // Serial.println(String("Hall Step: ") + bldc_step);
   // Serial.println(String("RPM: ") + RPM);
@@ -246,7 +267,7 @@ void loop() {
  * Interrupt Functions
  */
 void buttonPress() {
-  if ( door_state == IDLE && pulseCount < 100 ) {
+  if ( door_state == IDLE && pulseCount < openingAnglePulse ) {
     bldc_direction = CW;
     door_state = RUNNING;
     bldc_move();

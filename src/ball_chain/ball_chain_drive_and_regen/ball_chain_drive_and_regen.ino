@@ -26,7 +26,6 @@ int PORT_cur2 = A2;
 int PORT_cur3 = A5;
 
 int PORT_sw1 = 6;
-int PORT_led = 8;
 
 // Values for Serial Print
 int val_nfault = 0;
@@ -51,7 +50,7 @@ int val_cur2 = 0;
 int val_cur3 = 0;
 
 // Configuration and Global Parameters
-int duty_cycle = 128;
+int duty_cycle = 150;
 int duty_cycle_regen = 140;
 // bit(7) - 1 = 127 in 0-255 -> 50%; bit(6) - 1 = 63 -> 25%
 int duty_max = bit(8) - 1;
@@ -91,7 +90,8 @@ int PORT_trigger = A4;
 
 bool hvgate_on = 0;
 
-Adafruit_NeoPixel pixel(1, PORT_led, NEO_GRB + NEO_KHZ800);
+int PORT_led = 8;
+Adafruit_NeoPixel onePixel(1, PORT_led, NEO_GRB + NEO_KHZ800);
 
 // Setup
 void setup() {
@@ -148,8 +148,10 @@ void setup() {
   pinMode(PORT_lvgate, OUTPUT);
   digitalWrite(PORT_lvgate, HIGH);
 
-  pixel.begin();
-  pixel.show();
+  onePixel.begin();
+  onePixel.clear();
+  onePixel.setBrightness(20);
+  onePixel.show();
 }
 
 void loop() {
@@ -290,6 +292,10 @@ void buttonPress() {
   if ( door_state == IDLE && pulseCount < openingAnglePulse ) {
     bldc_direction = CW;
     door_state = RUNNING;
+
+    onePixel.setPixelColor(0, 255, 0, 0);
+    onePixel.show();
+
     bldc_move();
   }
   else {
@@ -437,6 +443,9 @@ void bldc_idle() {
   HwPWM0.writePin(PORT_en2, 0, false);
   digitalWrite(PORT_in3, LOW);
   HwPWM0.writePin(PORT_en3, 0, false);
+
+  onePixel.setPixelColor(0, 255, 192, 203);
+  onePixel.show();
 }
 
 void bldc_brake() {
@@ -446,6 +455,9 @@ void bldc_brake() {
   HwPWM0.writePin(PORT_en2, duty_max, false);
   digitalWrite(PORT_in3, LOW);
   HwPWM0.writePin(PORT_en3, duty_max, false);
+
+  onePixel.setPixelColor(0, 255, 191, 0);
+  onePixel.show();
 }
 
 void bldc_regen() {
@@ -455,6 +467,9 @@ void bldc_regen() {
   HwPWM0.writePin(PORT_en2, duty_cycle_regen, false);
   digitalWrite(PORT_in3, LOW);
   HwPWM0.writePin(PORT_en3, duty_cycle_regen, false);
+
+  onePixel.setPixelColor(0, 0, 255, 0);
+  onePixel.show();
 }
 
 
@@ -469,11 +484,13 @@ void HVbuttonPress() {
 void turnOnHV() {
   hvgate_on = true;
   digitalWrite(PORT_hvgate, hvgate_on);
-  pixel.setPixelColor(0, 255, 192, 203);
+  onePixel.setPixelColor(0, 255, 192, 203);
+  onePixel.show();
 }
 
 void turnOffHV() {
   hvgate_on = false;
   digitalWrite(PORT_hvgate, hvgate_on);
-  pixel.setPixelColor(0, 0, 0, 0);
+  onePixel.clear();
+  onePixel.show();
 }

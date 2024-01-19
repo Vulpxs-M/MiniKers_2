@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Adafruit_TinyUSB.h> // for Serial
+#include <Adafruit_NeoPixel.h> // for NeoPixel LED
 
 #define CW    1
 #define CCW  -1
@@ -25,6 +26,7 @@ int PORT_cur2 = A2;
 int PORT_cur3 = A5;
 
 int PORT_sw1 = 6;
+int PORT_led = 8;
 
 // Values for Serial Print
 int val_nfault = 0;
@@ -49,8 +51,8 @@ int val_cur2 = 0;
 int val_cur3 = 0;
 
 // Configuration and Global Parameters
-int duty_cycle = 140;
-int duty_cycle_regen = 128;
+int duty_cycle = 128;
+int duty_cycle_regen = 140;
 // bit(7) - 1 = 127 in 0-255 -> 50%; bit(6) - 1 = 63 -> 25%
 int duty_max = bit(8) - 1;
 
@@ -60,7 +62,7 @@ int bldc_step = 0;
 // For RPM and Pulse Count
 int direct = CW;
 int pulseCount;
-int openingAnglePulse = 2000;
+int openingAnglePulse = 1800;
 
 float startTime;
 float prevTime;
@@ -89,6 +91,7 @@ int PORT_trigger = A4;
 
 bool hvgate_on = 0;
 
+Adafruit_NeoPixel pixel(1, PORT_led, NEO_GRB + NEO_KHZ800);
 
 // Setup
 void setup() {
@@ -145,16 +148,33 @@ void setup() {
   pinMode(PORT_lvgate, OUTPUT);
   digitalWrite(PORT_lvgate, HIGH);
 
-
+  pixel.begin();
+  pixel.show();
 }
 
 void loop() {
-  if ((millis() - prevTime) > 200) {
-    RPM = 0;
-    if ( door_state == HARVESTING ) {
+  if ( door_state == HARVESTING ) {
+    if ( RPM > 1200 ) {
+      duty_cycle_regen = 150;
+      bldc_regen();
+    }
+    else if ( RPM > 600 ) {
+      duty_cycle_regen = (int) (-0.08 * RPM) + 250;
+      bldc_regen();
+    }
+    else if ( RPM > 400 ) {
+      duty_cycle_regen = 200;
+      bldc_regen();
+    }
+    else {
+      duty_cycle_regen = 0;
       bldc_idle();
       door_state = IDLE;
     }
+  }
+
+  if ((millis() - prevTime) > 200) {
+    RPM = 0;
   } 
 
   if ( door_state == RUNNING && pulseCount > openingAnglePulse ) {
@@ -171,13 +191,13 @@ void loop() {
     }
   }
 
-  if ( door_state == IDLE && RPM > 100 ) {
+  if ( door_state == IDLE && RPM > 600 ) {
     bldc_regen();
     door_state = HARVESTING;
   }
 
   vin_raw = analogRead(PORT_vsense);
-  // vin_calculated = vin_raw * 0.0272 + 0.0735;
+  vin_calculated = vin_raw * 0.0272 + 0.0735;
   // vin_filtered = vin_calculated * k + (1.0 - k) * vin_filtered;
 
   iin_raw = analogRead(PORT_isense);
@@ -188,7 +208,7 @@ void loop() {
   val_cur2 = analogRead(PORT_cur2);
   val_cur3 = analogRead(PORT_cur3);
 
-  if ( millis() > (prevSerial + 4) && hvgate_on && vin_filtered > 5 ) {
+  if ( millis() > prevSerial && hvgate_on && vin_calculated > 5 ) {
     // Serial.println(vin_raw);
     // Serial.println(iin_raw);
     // Serial.println(String(" [") + vin_filtered + String(" V]"));
@@ -197,7 +217,7 @@ void loop() {
 
     // Serial.println(millis() + String(",") + vin_calculated + String(",") + iin_calculated + String(",") + door_state);
     Serial.println(millis() + String(",") + vin_raw + String(",") + iin_raw + String(",") + door_state + String(",") + RPM + String(",") + 
-                    val_cur1 + String(",") + val_cur2 + String(",") + val_cur3)
+                    val_cur1 + String(",") + val_cur2 + String(",") + val_cur3 + String(",") + pulseCount);
 
     prevSerial = millis();
   }
@@ -449,9 +469,11 @@ void HVbuttonPress() {
 void turnOnHV() {
   hvgate_on = true;
   digitalWrite(PORT_hvgate, hvgate_on);
+  pixel.setPixelColor(0, 255, 192, 203);
 }
 
 void turnOffHV() {
   hvgate_on = false;
   digitalWrite(PORT_hvgate, hvgate_on);
+  pixel.setPixelColor(0, 0, 0, 0);
 }

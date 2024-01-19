@@ -1,0 +1,56 @@
+Id,Designator,Footprint,Quantity,Designation,Supplier and Ref,JLCPCB Part #
+1,"H1,H2,H3",edg:JlcToolingHole_1.152mm,3,,,
+2,U1,bldc:FEATHERWING_NODIM,1,,,
+3,J1,Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical,1,,,
+4,"Q1,Q3",Package_TO_SOT_SMD:SOT-23,2,"60V 115mA 200mW 7.5Ω@10V,500mA 2.5V@250μA N Channel SOT-23(SOT-23-3) MOSFETs ROHS",,C8545
+5,"R1,R12,R15,R17,R18",Resistor_SMD:R_0603_1608Metric,5,±1% 1/10W Thick Film Resistors 75V ±100ppm/℃ -55℃~+155℃ 10kΩ 0603 Chip Resistor - Surface Mount ROHS,,C25804
+6,Q2,Package_TO_SOT_SMD:SOT-23,1,"20V 3.1A 860mW 112mΩ@4.5V,2.8A 1V@250μA P Channel SOT-23(SOT-23-3) MOSFETs ROHS",,C10487
+7,SW1,Button_Switch_SMD:SW_SPST_SKQG_WithoutStem,1,,,C318884
+8,"R2,R3,R6,R7,R8,R9,R10,R11",Resistor_SMD:R_0603_1608Metric,8,±1% 1/10W Thick Film Resistors 75V ±100ppm/℃ -55℃~+155℃ 4.7kΩ 0603 Chip Resistor - Surface Mount ROHS,,C23162
+9,TP1,edg:TestPoint_TE_RCT_0805,1,_mcu_i2c_i2c_link.scl,,C238130
+10,TP2,edg:TestPoint_TE_RCT_0805,1,i2c_tp._io_sda_link,,C238130
+11,J2,Connector_JST:JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical,1,,,
+12,R4,Resistor_SMD:R_0603_1608Metric,1,±1% 1/10W Thick Film Resistors 75V ±100ppm/℃ -55℃~+155℃ 120kΩ 0603 Chip Resistor - Surface Mount ROHS,,C25808
+13,"R5,R19,R20",Resistor_SMD:R_0603_1608Metric,3,±1% 1/10W Thick Film Resistors 75V ±100ppm/℃ -55℃~+155℃ 100kΩ 0603 Chip Resistor - Surface Mount ROHS,,C25803
+14,"U2,U5,U6,U7",Package_TO_SOT_SMD:SOT-23-5,4,,,C7972
+15,"C1,C14,C15,C16,C17,C18",Capacitor_SMD:C_0603_1608Metric,6,50V 100nF X7R ±10% 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS,,C14663
+16,TP3,edg:TestPoint_TE_RCT_0805,1,_ref_buf_output_link,,C238130
+17,J3,Connector_JST:JST_PH_B5B-PH-K_1x05_P2.00mm_Vertical,1,,,
+18,TP4,edg:TestPoint_TE_RCT_0805,1,_hall_phases_1_link,,C238130
+19,"C2,C3,C4,C5,C6,C7",Capacitor_SMD:C_0603_1608Metric,6,50V 15nF X7R ±10% 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS,,C1596
+20,TP5,edg:TestPoint_TE_RCT_0805,1,_hall_rc[1]_output_link,,C238130
+21,TP6,edg:TestPoint_TE_RCT_0805,1,_hall_phases_2_link,,C238130
+22,TP7,edg:TestPoint_TE_RCT_0805,1,_hall_rc[2]_output_link,,C238130
+23,TP8,edg:TestPoint_TE_RCT_0805,1,_hall_phases_3_link,,C238130
+24,TP9,edg:TestPoint_TE_RCT_0805,1,_hall_rc[3]_output_link,,C238130
+25,Q4,Package_SO:SOIC-8_3.9x4.9mm_P1.27mm,1,"30V 9.9A 1.45W 11mΩ@20V,12A 3V@250μA P Channel SOIC-8_150mil MOSFETs ROHS",,C260923
+26,D1,Diode_SMD:D_MiniMELF,1,100nA@11V 16Ω Single 14.25V~15.75V 500mW 15V LL-34 Zener Diodes ROHS,,C282396
+27,R13,Resistor_SMD:R_1206_3216Metric,1,±1% 1/4W Thick Film Resistors 200V -55℃~+155℃ 1kΩ 1206 Chip Resistor - Surface Mount ROHS,,C4410
+28,R14,Resistor_SMD:R_0603_1608Metric,1,±1% 1/10W Thick Film Resistors 75V ±100ppm/℃ -55℃~+155℃ 68kΩ 0603 Chip Resistor - Surface Mount ROHS,,C23231
+29,TP10,edg:TestPoint_TE_RCT_0805,1,_vsense_output_link,,C238130
+30,R16,Resistor_SMD:R_2512_6332Metric,1,±1% 1W Thick Film Resistors 200V ±500ppm/℃ -55℃~+155℃ 0.05Ω 2512 Chip Resistor - Surface Mount ROHS,,C305115
+31,U3,Package_SO:SOIC-8_3.9x4.9mm_P1.27mm,1,,,C79274
+32,"C8,C10,C11",Capacitor_SMD:C_0805_2012Metric,3,100V 100nF X7R ±10% 0805 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS,,C28233
+33,TP11,edg:TestPoint_TE_RCT_0805,1,_isense_out_link,,C238130
+34,D2,Diode_SMD:D_MiniMELF,1,4μA@1V 85Ω Single 2.8V~3.2V 500mW 3V LL-34 Zener Diodes ROHS,,C8055
+35,U4,Package_SO:HTSSOP-28-1EP_4.4x9.7mm_P0.65mm_EP2.85x5.4mm_ThermalVias,1,,,C92482
+36,C9,Capacitor_SMD:C_0805_2012Metric,1,50V 10uF X5R ±10% 0805 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS,,C440198
+37,C12,Capacitor_SMD:C_0603_1608Metric,1,25V 470nF X7R ±10% 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS,,C1623
+38,C13,Capacitor_SMD:C_0603_1608Metric,1,50V 10nF X7R ±10% 0603 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS,,C57112
+39,TP12,edg:TestPoint_TE_RCT_0805,1,_mcu_gpio_bldc_fault_link,,C238130
+40,TP13,edg:TestPoint_TE_RCT_0805,1,_mcu_gpio_bldc_en_link.1,,C238130
+41,TP14,edg:TestPoint_TE_RCT_0805,1,_mcu_gpio_bldc_en_link.2,,C238130
+42,TP15,edg:TestPoint_TE_RCT_0805,1,_mcu_gpio_bldc_en_link.3,,C238130
+43,TP16,edg:TestPoint_TE_RCT_0805,1,_mcu_gpio_bldc_in_link.1,,C238130
+44,TP17,edg:TestPoint_TE_RCT_0805,1,_mcu_gpio_bldc_in_link.2,,C238130
+45,TP18,edg:TestPoint_TE_RCT_0805,1,_mcu_gpio_bldc_in_link.3,,C238130
+46,J4,Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical,1,,,
+47,"R21,R24,R27",Resistor_SMD:R_2512_6332Metric,3,±5% 1W Thick Film Resistors 200V ±800ppm/℃ -55℃~+155℃ 50mΩ 2512 Chip Resistor - Surface Mount ROHS,,C474258
+48,"R22,R25,R28",Resistor_SMD:R_0603_1608Metric,3,±1% 1/10W Thick Film Resistors 75V ±100ppm/℃ -55℃~+155℃ 390kΩ 0603 Chip Resistor - Surface Mount ROHS,,C23150
+49,"R23,R26,R29",Resistor_SMD:R_0603_1608Metric,3,±1% 1/10W Thick Film Resistors 75V ±100ppm/℃ -55℃~+155℃ 20kΩ 0603 Chip Resistor - Surface Mount ROHS,,C4184
+50,TP19,edg:TestPoint_TE_RCT_0805,1,_curr_amp[1]_output_link,,C238130
+51,TP20,edg:TestPoint_TE_RCT_0805,1,_curr_amp[2]_output_link,,C238130
+52,TP21,edg:TestPoint_TE_RCT_0805,1,_curr_amp[3]_output_link,,C238130
+53,"D3,D4,D5,D6,D7,D8",Diode_SMD:D_MiniMELF,6,75V +175℃@(Tj) 500mW 1V@10mA 4ns 5μA@75V 200mA LL-34 Switching Diode ROHS,,C9808
+54,D9,Diode_SMD:D_MiniMELF,1,10μA@1V ±5% 100Ω Single 500mW 3.6V LL34 Zener Diodes ROHS,,C261062
+55,R30,Resistor_SMD:R_0603_1608Metric,1,±1% 1/10W Thick Film Resistors 75V ±100ppm/℃ -55℃~+155℃ 200kΩ 0603 Chip Resistor - Surface Mount ROHS,,C25811

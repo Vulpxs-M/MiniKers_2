@@ -52,7 +52,7 @@ int val_cur3 = 0;
 // Configuration and Global Parameters
 int duty_cycle = 150;
 int duty_cycle_regen = 0;
-int duty_max = bit(8) - 1; // 2047
+int duty_max = bit(8) - 1; // 255
 
 int bldc_direction = 0;
 int bldc_step = 0;
@@ -148,7 +148,7 @@ void setup() {
   digitalWrite(PORT_lvgate, HIGH);
 
   onePixel.begin();
-  onePixel.clear();
+  onePixel.setPixelColor(0, 255, 192, 203);
   onePixel.show();
 }
 
@@ -445,11 +445,11 @@ void bldc_idle() {
   HwPWM0.writePin(PORT_en3, 0, false);
 
   if (hvgate_on) {
-    onePixel.setPixelColor(0, 255, 192, 203);
+    onePixel.clear();
     onePixel.show();
   }
   else {
-    onePixel.clear();
+    onePixel.setPixelColor(0, 255, 192, 203);
     onePixel.show();
   }
 }
@@ -492,13 +492,13 @@ void HVbuttonPress() {
 void turnOnHV() {
   hvgate_on = true;
   digitalWrite(PORT_hvgate, hvgate_on);
-  onePixel.setPixelColor(0, 255, 192, 203);
+  onePixel.clear();  
   onePixel.show();
 }
 
 void turnOffHV() {
   hvgate_on = false;
   digitalWrite(PORT_hvgate, hvgate_on);
-  onePixel.clear();
+  onePixel.setPixelColor(0, 255, 192, 203);
   onePixel.show();
 }

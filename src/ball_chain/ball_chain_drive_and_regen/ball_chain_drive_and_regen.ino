@@ -2,8 +2,8 @@
 #include <Adafruit_TinyUSB.h> // for Serial
 #include <Adafruit_NeoPixel.h> // for NeoPixel LED
 
-#define CW    1
-#define CCW  -1
+#define CW    1   // up
+#define CCW  -1   // down
 
 // Port Assignment
 int PORT_in1 = 12;
@@ -50,17 +50,17 @@ int val_cur2 = 0;
 int val_cur3 = 0;
 
 // Configuration and Global Parameters
-int duty_cycle = 150;
+int duty_cycle = 90;
 int duty_cycle_regen = 0;
-int duty_max = bit(8) - 1; // 2047
+int duty_max = bit(8) - 1; // 255
 
-int bldc_direction = 0;
+int bldc_direction = CCW;
 int bldc_step = 0;
 
 // For RPM and Pulse Count
 int direct = CW;
 int pulseCount;
-int openingAnglePulse = 1800;
+int openingAnglePulse = 6000;
 
 float startTime;
 float prevTime;
@@ -148,22 +148,22 @@ void setup() {
   digitalWrite(PORT_lvgate, HIGH);
 
   onePixel.begin();
-  onePixel.clear();
+  onePixel.setPixelColor(0, 255, 192, 203);
   onePixel.show();
 }
 
 void loop() {
   if ( door_state == HARVESTING ) {
     if ( RPM > 1200 ) {
-      duty_cycle_regen = 150;
+      duty_cycle_regen = 180;
       bldc_regen();
     }
     else if ( RPM > 600 ) {
-      duty_cycle_regen = (int) (-0.08 * RPM) + 250;
+      duty_cycle_regen = (int) (-0.02 * RPM) + 233;
       bldc_regen();
     }
     else if ( RPM > 400 ) {
-      duty_cycle_regen = 200;
+      duty_cycle_regen = 220;
       bldc_regen();
     }
     else {
@@ -177,19 +177,21 @@ void loop() {
     RPM = 0;
   } 
 
-  if ( door_state == RUNNING && pulseCount > openingAnglePulse ) {
-    bldc_direction = 0;
-    door_state = HOLD;
-    holdingTime = millis();
-    bldc_brake();
+  if ( door_state == RUNNING && ( ( bldc_direction == CW && pulseCount > openingAnglePulse ) || ( bldc_direction == CCW && pulseCount < 0 ) ) ) {
+    // bldc_direction = 0;
+    // door_state = HOLD;
+    // holdingTime = millis();
+    // bldc_brake();
+    bldc_idle();
+    door_state = IDLE;
   }
 
-  if ( door_state == HOLD ) {
-    if ( millis() - holdingTime >= 5000 ) {
-      bldc_idle();
-      door_state = IDLE;
-    }
-  }
+  // if ( door_state == HOLD ) {
+  //   if ( millis() - holdingTime >= 5000 ) {
+  //     bldc_idle();
+  //     door_state = IDLE;
+  //   }
+  // }
 
   if ( door_state == IDLE && RPM > 600 ) {
     bldc_regen();
@@ -287,8 +289,8 @@ void loop() {
  * Interrupt Functions
  */
 void buttonPress() {
-  if ( door_state == IDLE && pulseCount < openingAnglePulse && hvgate_on ) {
-    bldc_direction = CW;
+  if ( door_state == IDLE && (( bldc_direction == CW && pulseCount > 0 ) || ( bldc_direction == CCW && pulseCount < openingAnglePulse )) && hvgate_on ) {
+    bldc_direction = bldc_direction == CW ? CCW : CW;
     door_state = RUNNING;
 
     onePixel.setPixelColor(0, 255, 0, 0);
@@ -356,10 +358,12 @@ void calculate_rpm() {
 void bldc_move() {
   int step;
 
-  // int ccw[] = {2, 4, 3, 6, 1, 5}; // works with directional sensing w/o pullup
-  int ccw[] = {3, 5, 4, 1, 2, 6}; // most efficient
-  // int cw[] = {1, 3, 2, 5, 6, 4}; // works with directional sensing w/o pullup
-  int cw[] = {6, 2, 1, 4, 5, 3}; // most efficient
+  // int ccw[] = {2, 4, 3, 6, 1, 5}; // doesn't work for chain
+  // int ccw[] = {3, 5, 4, 1, 2, 6}; // doesn't work for chain
+  int ccw[] = {5, 1, 6, 3, 4, 2}; // most efficient
+  // int ccw[] = {4, 6, 5, 2, 3, 1}; // experimental for chain
+  int cw[] = {1, 3, 2, 5, 6, 4}; // most efficient
+  // int cw[] = {6, 2, 1, 4, 5, 3}; // experimental for chain
 
   if (bldc_step < 1 || bldc_step > 6) {
     step = 0;
@@ -445,11 +449,11 @@ void bldc_idle() {
   HwPWM0.writePin(PORT_en3, 0, false);
 
   if (hvgate_on) {
-    onePixel.setPixelColor(0, 255, 192, 203);
+    onePixel.clear();
     onePixel.show();
   }
   else {
-    onePixel.clear();
+    onePixel.setPixelColor(0, 255, 192, 203);
     onePixel.show();
   }
 }
@@ -492,13 +496,13 @@ void HVbuttonPress() {
 void turnOnHV() {
   hvgate_on = true;
   digitalWrite(PORT_hvgate, hvgate_on);
-  onePixel.setPixelColor(0, 255, 192, 203);
+  onePixel.clear();
   onePixel.show();
 }
 
 void turnOffHV() {
   hvgate_on = false;
   digitalWrite(PORT_hvgate, hvgate_on);
-  onePixel.clear();
+  onePixel.setPixelColor(0, 255, 192, 203);
   onePixel.show();
 }

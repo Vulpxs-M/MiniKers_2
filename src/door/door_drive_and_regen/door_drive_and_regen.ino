@@ -50,9 +50,9 @@ int val_cur2 = 0;
 int val_cur3 = 0;
 
 // Configuration and Global Parameters
-int duty_cycle = 150;
+int duty_cycle = 40;
 int duty_cycle_regen = 0;
-int duty_max = bit(8) - 1; // 255
+int duty_max = bit(6) - 1; // 255
 
 int bldc_direction = 0;
 int bldc_step = 0;
@@ -120,8 +120,8 @@ void setup() {
   HwPWM0.addPin(PORT_en3);
 
   HwPWM0.begin();
-  HwPWM0.setResolution(8);
-  HwPWM0.setClockDiv(PWM_PRESCALER_PRESCALER_DIV_2);
+  HwPWM0.setResolution(6);
+  HwPWM0.setClockDiv(PWM_PRESCALER_PRESCALER_DIV_8);
 
   // Initial State Detection
   val_u = digitalRead(PORT_hall_u);
@@ -155,15 +155,15 @@ void setup() {
 void loop() {
   if ( door_state == HARVESTING ) {
     if ( RPM > 1200 ) {
-      duty_cycle_regen = 150;
+      duty_cycle_regen = 40;
       bldc_regen();
     }
     else if ( RPM > 600 ) {
-      duty_cycle_regen = (int) (-0.08 * RPM) + 250;
+      duty_cycle_regen = (int) (-0.017 * RPM) + 60;
       bldc_regen();
     }
     else if ( RPM > 400 ) {
-      duty_cycle_regen = 200;
+      duty_cycle_regen = 50;
       bldc_regen();
     }
     else {
@@ -374,7 +374,7 @@ void bldc_move() {
     step = 0;
   }
 
-  HwPWM0.setClockDiv(PWM_PRESCALER_PRESCALER_DIV_2);
+  HwPWM0.setClockDiv(PWM_PRESCALER_PRESCALER_DIV_8);
 
   switch(step) {
     case 1:
